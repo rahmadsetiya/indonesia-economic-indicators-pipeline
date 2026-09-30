@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import sys
 from datetime import date, datetime
 from decimal import Decimal
@@ -11,7 +12,7 @@ from pathlib import Path
 from .common.config import load_sources, source_by_id
 from .common.models import CanonicalObservation
 from .load.postgres import initialize_schema, load_observations
-from .pipeline import run_bi_policy_rate_xlsx, run_local_csv
+from .pipeline import run_bi_policy_rate_xlsx, run_bps_gdp, run_local_csv
 from .quality.checks import validate
 
 
@@ -32,6 +33,18 @@ def _read_canonical_csv(path: Path) -> list[CanonicalObservation]:
     return rows
 
 
+def _secret(name: str, env_file: Path) -> str:
+    if value := os.environ.get(name):
+        return value
+    if env_file.exists():
+        for raw_line in env_file.read_text(encoding="utf-8-sig").splitlines():
+            if raw_line.startswith(name + "="):
+                value = raw_line.split("=", 1)[1].strip().strip('"').strip("'")
+                if value:
+                    return value
+    raise ValueError(f"{name} is required in the environment or {env_file}")
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Indonesia economic indicators pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -41,6 +54,9 @@ def _parser() -> argparse.ArgumentParser:
     bi_rate = sub.add_parser("ingest-bi-rate", help="ingest an official BI policy-rate XLSX")
     bi_rate.add_argument("path", type=Path, help="path to BI-7Day-RR.xlsx")
     bi_rate.add_argument("--database-url", help="also load PostgreSQL")
+    bps_gdp = sub.add_parser("ingest-bps-gdp", help="ingest official BPS real GDP data")
+    bps_gdp.add_argument("--env-file", type=Path, help="defaults to the repository .env")
+    bps_gdp.add_argument("--database-url", help="also load PostgreSQL")
     validate_parser = sub.add_parser("validate", help="validate a canonical staging CSV")
     validate_parser.add_argument("path", type=Path)
     init = sub.add_parser("init-db", help="create PostgreSQL schema")
@@ -73,13 +89,22 @@ def main(argv: list[str] | None = None) -> None:
             raw_root=root / "data" / "raw",
             staging_path=root / "data" / "staging" / "demo_observations.csv",
         )
-    else:
+    elif args.command == "ingest-bi-rate":
         source = source_by_id(registry, "bi_policy_rate")
         observations, report = run_bi_policy_rate_xlsx(
             args.path,
             source=source,
             raw_root=root / "data" / "raw",
             staging_path=root / "data" / "staging" / "bi_policy_rate_observations.csv",
+        )
+    else:
+        source = source_by_id(registry, "bps_gdp")
+        env_file = args.env_file or root / ".env"
+        observations, report = run_bps_gdp(
+            source=source,
+            api_key=_secret("BPS_API_KEY", env_file),
+            raw_root=root / "data" / "raw",
+            staging_path=root / "data" / "staging" / "bps_gdp_observations.csv",
         )
     result: dict[str, object] = {
         "source": source["id"],

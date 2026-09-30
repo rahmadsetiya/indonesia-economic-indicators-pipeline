@@ -34,14 +34,27 @@
       "status": "IMPLEMENTED"
     },
     {
-      "id": "bps_webapi",
+      "id": "bps_gdp",
       "institution": "Badan Pusat Statistik",
-      "dataset_name": "BPS WebAPI (dataset selection pending)",
-      "dataset_code": "BPS_TBD",
-      "access_method": "api_key_required_to_verify",
-      "source_url": "https://webapi.bps.go.id/",
-      "enabled": false,
-      "status": "DISCOVERED"
+      "dataset_name": "[Seri 2010] PDB Triwulanan ADHK menurut Pengeluaran",
+      "dataset_code": "BPS_VAR_1956",
+      "indicator_code": "gdp",
+      "indicator_name": "Real gross domestic product",
+      "variable_id": 1956,
+      "vertical_variable_code": 800,
+      "vertical_variable_label": "8. PRODUK DOMESTIK BRUTO",
+      "derived_variable_id": 0,
+      "geography_code": "IDN",
+      "geography_name": "Indonesia",
+      "geography_level": "national",
+      "source_unit": "Milyar Rupiah",
+      "unit_code": "billion_idr",
+      "unit_name": "billion rupiah",
+      "price_basis": "constant_2010",
+      "access_method": "official_json_api",
+      "source_url": "https://webapi.bps.go.id/v1/api/list/model/data/domain/0000/var/1956",
+      "enabled": true,
+      "status": "IMPLEMENTED"
     }
   ]
 }

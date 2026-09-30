@@ -2,7 +2,7 @@
 
 A learning-focused, reproducible data-engineering project for integrating national-level Indonesian macroeconomic indicators from official sources. The pipeline keeps source bytes immutable, records provenance, standardizes observations, validates quality, and loads PostgreSQL idempotently.
 
-> Status: foundation/MVP. The local synthetic demo and official BI policy-rate XLSX connector are runnable. Other BI and BPS source records remain discovery entries.
+> Status: foundation/MVP. The synthetic demo, BI policy-rate XLSX connector, and BPS real-GDP WebAPI connector are runnable. Other source records remain discovery entries.
 
 ## Scope
 
@@ -46,6 +46,21 @@ layout, and writes event-level observations to `data/staging/bi_policy_rate_obse
 The website's download control currently uses a dynamic page postback, so this command deliberately
 starts from the official downloaded workbook rather than an undocumented internal endpoint.
 
+For BPS real GDP, register an application at the
+[BPS WebAPI portal](https://webapi.bps.go.id/developer), place its key in the ignored `.env` file,
+and run:
+
+```dotenv
+BPS_API_KEY=your_key
+```
+
+```powershell
+python -m indonesia_economic_indicators.cli ingest-bps-gdp
+```
+
+The connector inventories available years, requests at most three years per official API call,
+preserves every JSON response, and emits the headline GDP component at 2010 constant prices.
+
 To test PostgreSQL loading:
 
 ```powershell
@@ -63,6 +78,7 @@ Run `demo` twice. The second database load must report unchanged rows rather tha
 python -m indonesia_economic_indicators.cli inventory
 python -m indonesia_economic_indicators.cli demo [--database-url URL]
 python -m indonesia_economic_indicators.cli ingest-bi-rate PATH [--database-url URL]
+python -m indonesia_economic_indicators.cli ingest-bps-gdp [--env-file PATH] [--database-url URL]
 python -m indonesia_economic_indicators.cli validate PATH
 python -m indonesia_economic_indicators.cli init-db --database-url URL
 ```

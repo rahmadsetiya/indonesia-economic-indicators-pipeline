@@ -29,3 +29,26 @@ Checked 30 September 2026 using the download control on the official
 
 `IMPLEMENTED` means the local-XLSX extraction, raw manifest, transformation, validation, and tests
 exist. Promotion to `VALIDATED` requires repeat operational runs and a verified PostgreSQL load.
+
+## BPS WebAPI real GDP
+
+Checked 30 September 2026 against the official authenticated JSON API and its
+[public documentation](https://webapi.bps.go.id/documentation/).
+
+- The national domain is `0000`; the verified domain inventory contained 549 BPS domains.
+- Dynamic variable `1956` is `[Seri 2010] 2. PDB Triwulanan Atas Dasar Harga Konstan menurut
+  Pengeluaran`, measured in `Milyar Rupiah`.
+- The period inventory contained 17 years, 2010–2026. The vertical-variable inventory contained 32
+  entries; code `800` is the headline `8. PRODUK DOMESTIK BRUTO` selected by this connector.
+- Derived-period IDs `31`–`34` are quarters I–IV and ID `35` is annual. The connector constructs
+  source keys from verified dimension IDs instead of parsing variable-length concatenated keys.
+- The API rejected a 17-year request and stated a maximum of three years for `th`; extraction now
+  batches no more than three years per request.
+- Source metadata marks 2024 provisional, 2025 very provisional, and 2026 very-very provisional.
+  Those notes remain in every raw payload and must be considered in revision analysis.
+- The API can return HTTP 200 with an application-level `status=Error`; both layers are validated.
+  API keys are read only from `BPS_API_KEY`, excluded from public provenance URLs, and never logged.
+
+`IMPLEMENTED` means extraction, immutable raw payloads/manifests, headline transformation, quality
+validation, CLI integration, and offline tests exist. PostgreSQL integration remains to be run before
+promotion to `VALIDATED`.
