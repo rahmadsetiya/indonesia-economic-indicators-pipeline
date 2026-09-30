@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import fields
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -20,7 +20,7 @@ def run_local_csv(
     staging_path: Path,
     retrieved_at: datetime | None = None,
 ) -> tuple[list[CanonicalObservation], QualityReport]:
-    retrieved_at = retrieved_at or datetime.now(timezone.utc)
+    retrieved_at = retrieved_at or datetime.now(UTC)
     body = input_path.read_bytes()
     manifest = persist_raw(
         body,

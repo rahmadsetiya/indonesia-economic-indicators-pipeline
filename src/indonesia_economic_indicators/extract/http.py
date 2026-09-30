@@ -16,7 +16,7 @@ class HttpResponse:
 def fetch(url: str, timeout_seconds: int = 30, user_agent: str = "iei-pipeline/0.1") -> HttpResponse:
     request = Request(url, headers={"User-Agent": user_agent, "Accept": "*/*"})
     try:
-        with urlopen(request, timeout=timeout_seconds) as response:  # noqa: S310
+        with urlopen(request, timeout=timeout_seconds) as response:
             return HttpResponse(
                 body=response.read(),
                 status=response.status,

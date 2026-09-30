@@ -1,9 +1,12 @@
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
-from indonesia_economic_indicators.common.config import load_sources, source_by_id
+from indonesia_economic_indicators.common.config import (
+    load_sources,
+    source_by_id,
+)
 from indonesia_economic_indicators.pipeline import run_local_csv
 
 
@@ -21,7 +24,7 @@ class PipelineTests(unittest.TestCase):
                 source=source,
                 raw_root=base / "raw",
                 staging_path=base / "staging.csv",
-                retrieved_at=datetime(2026, 3, 31, tzinfo=timezone.utc),
+                retrieved_at=datetime(2026, 3, 31, tzinfo=UTC),
             )
             self.assertTrue(report.passed)
             self.assertEqual(len(rows), 3)

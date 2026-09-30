@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Iterable
 
 from ..common.models import CanonicalObservation
 
@@ -40,9 +40,9 @@ def validate(observations: Iterable[CanonicalObservation]) -> QualityReport:
             report.errors.append(f"row {index}: unsupported frequency {row.frequency!r}")
         if not row.indicator_code or not row.geography_code or not row.unit_code:
             report.errors.append(f"row {index}: indicator, geography, and unit are required")
-        if row.indicator_code == "exchange_rate" and row.value <= Decimal("0"):
+        if row.indicator_code == "exchange_rate" and row.value <= Decimal(0):
             report.errors.append(f"row {index}: exchange rate must be positive")
-        if row.indicator_code in nonnegative_indicators and row.value < Decimal("0"):
+        if row.indicator_code in nonnegative_indicators and row.value < Decimal(0):
             report.errors.append(f"row {index}: {row.indicator_code} must be nonnegative")
         if len(row.checksum_sha256) != 64:
             report.errors.append(f"row {index}: invalid SHA-256 provenance checksum")

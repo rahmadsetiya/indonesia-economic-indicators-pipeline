@@ -4,7 +4,7 @@ import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -44,7 +44,7 @@ def persist_raw(
     if retrieved_at.tzinfo is None:
         raise ValueError("retrieved_at must be timezone-aware")
     safe_filename = Path(original_filename).name
-    timestamp = retrieved_at.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    timestamp = retrieved_at.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
     directory = root / _slug(institution) / _slug(dataset_code)
     directory.mkdir(parents=True, exist_ok=True)
     raw_path = directory / f"{timestamp}_{safe_filename}"
