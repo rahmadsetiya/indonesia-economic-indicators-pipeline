@@ -2,7 +2,7 @@
 
 A learning-focused, reproducible data-engineering project for integrating national-level Indonesian macroeconomic indicators from official sources. The pipeline keeps source bytes immutable, records provenance, standardizes observations, validates quality, and loads PostgreSQL idempotently.
 
-> Status: foundation/MVP. The local synthetic demo is runnable. BI and BPS source records are discovery entries—not claims that production extractors are complete.
+> Status: foundation/MVP. The local synthetic demo and official BI policy-rate XLSX connector are runnable. Other BI and BPS source records remain discovery entries.
 
 ## Scope
 
@@ -34,6 +34,18 @@ python -m indonesia_economic_indicators.cli demo
 
 The demo uses clearly labelled synthetic observations from `examples/bi_inflation_sample.csv`. It creates an immutable raw snapshot and validated staging CSV without calling an external service.
 
+To ingest the official BI policy-rate history, download `BI-7Day-RR.xlsx` from the
+[BI-Rate indicator page](https://www.bi.go.id/id/statistik/indikator/bi-rate.aspx), then run:
+
+```powershell
+python -m indonesia_economic_indicators.cli ingest-bi-rate "C:\path\BI-7Day-RR.xlsx"
+```
+
+The connector preserves the workbook bytes and manifest under `data/raw`, validates the documented
+layout, and writes event-level observations to `data/staging/bi_policy_rate_observations.csv`.
+The website's download control currently uses a dynamic page postback, so this command deliberately
+starts from the official downloaded workbook rather than an undocumented internal endpoint.
+
 To test PostgreSQL loading:
 
 ```powershell
@@ -50,6 +62,7 @@ Run `demo` twice. The second database load must report unchanged rows rather tha
 ```text
 python -m indonesia_economic_indicators.cli inventory
 python -m indonesia_economic_indicators.cli demo [--database-url URL]
+python -m indonesia_economic_indicators.cli ingest-bi-rate PATH [--database-url URL]
 python -m indonesia_economic_indicators.cli validate PATH
 python -m indonesia_economic_indicators.cli init-db --database-url URL
 ```

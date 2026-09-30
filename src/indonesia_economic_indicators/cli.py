@@ -11,7 +11,7 @@ from pathlib import Path
 from .common.config import load_sources, source_by_id
 from .common.models import CanonicalObservation
 from .load.postgres import initialize_schema, load_observations
-from .pipeline import run_local_csv
+from .pipeline import run_bi_policy_rate_xlsx, run_local_csv
 from .quality.checks import validate
 
 
@@ -38,6 +38,9 @@ def _parser() -> argparse.ArgumentParser:
     sub.add_parser("inventory", help="print configured source status")
     demo = sub.add_parser("demo", help="run the synthetic local CSV pipeline")
     demo.add_argument("--database-url", help="also load PostgreSQL")
+    bi_rate = sub.add_parser("ingest-bi-rate", help="ingest an official BI policy-rate XLSX")
+    bi_rate.add_argument("path", type=Path, help="path to BI-7Day-RR.xlsx")
+    bi_rate.add_argument("--database-url", help="also load PostgreSQL")
     validate_parser = sub.add_parser("validate", help="validate a canonical staging CSV")
     validate_parser.add_argument("path", type=Path)
     init = sub.add_parser("init-db", help="create PostgreSQL schema")
@@ -62,13 +65,22 @@ def main(argv: list[str] | None = None) -> None:
         sys.exit(0 if report.passed else 1)
 
     registry = load_sources(root / "config" / "sources.yaml")
-    source = source_by_id(registry, "demo_bi_inflation")
-    observations, report = run_local_csv(
-        root / "examples" / "bi_inflation_sample.csv",
-        source=source,
-        raw_root=root / "data" / "raw",
-        staging_path=root / "data" / "staging" / "demo_observations.csv",
-    )
+    if args.command == "demo":
+        source = source_by_id(registry, "demo_bi_inflation")
+        observations, report = run_local_csv(
+            root / "examples" / "bi_inflation_sample.csv",
+            source=source,
+            raw_root=root / "data" / "raw",
+            staging_path=root / "data" / "staging" / "demo_observations.csv",
+        )
+    else:
+        source = source_by_id(registry, "bi_policy_rate")
+        observations, report = run_bi_policy_rate_xlsx(
+            args.path,
+            source=source,
+            raw_root=root / "data" / "raw",
+            staging_path=root / "data" / "staging" / "bi_policy_rate_observations.csv",
+        )
     result: dict[str, object] = {
         "source": source["id"],
         "retrieved": report.row_count,

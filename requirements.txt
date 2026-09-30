@@ -1,2 +1,2 @@
-# Runtime is standard-library-only except for PostgreSQL loading.
+openpyxl>=3.1,<4
 psycopg[binary]>=3.2,<4

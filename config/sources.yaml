@@ -16,14 +16,22 @@
       "status": "VALIDATED"
     },
     {
-      "id": "bi_statistics_portal",
+      "id": "bi_policy_rate",
       "institution": "Bank Indonesia",
-      "dataset_name": "BI statistics portal (dataset selection pending)",
-      "dataset_code": "BI_TBD",
-      "access_method": "to_be_verified",
-      "source_url": "https://www.bi.go.id/en/statistik/",
-      "enabled": false,
-      "status": "DISCOVERED"
+      "dataset_name": "BI-Rate decision history (BI7DRR / BI-Rate)",
+      "dataset_code": "BI_POLICY_RATE_DECISIONS",
+      "indicator_code": "policy_rate",
+      "indicator_name": "BI policy rate",
+      "frequency": "event",
+      "geography_code": "IDN",
+      "geography_name": "Indonesia",
+      "geography_level": "national",
+      "unit_code": "percent",
+      "unit_name": "percent",
+      "access_method": "official_xlsx_download_manual",
+      "source_url": "https://www.bi.go.id/id/statistik/indikator/bi-rate.aspx",
+      "enabled": true,
+      "status": "IMPLEMENTED"
     },
     {
       "id": "bps_webapi",
