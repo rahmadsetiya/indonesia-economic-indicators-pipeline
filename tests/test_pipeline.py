@@ -3,10 +3,7 @@ import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 
-from indonesia_economic_indicators.common.config import (
-    load_sources,
-    source_by_id,
-)
+from indonesia_economic_indicators.common.config import load_sources, source_by_id
 from indonesia_economic_indicators.pipeline import run_local_csv
 
 
