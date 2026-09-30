@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "demo_bi_inflation",
+      "institution": "Bank Indonesia",
+      "dataset_name": "Synthetic BI inflation demo",
+      "dataset_code": "DEMO_BI_INFLATION",
+      "indicator_code": "inflation_yoy",
+      "frequency": "monthly",
+      "geography_code": "IDN",
+      "unit_code": "percent",
+      "access_method": "local_fixture",
+      "source_url": "local://examples/bi_inflation_sample.csv",
+      "enabled": true,
+      "status": "VALIDATED"
+    },
+    {
+      "id": "bi_statistics_portal",
+      "institution": "Bank Indonesia",
+      "dataset_name": "BI statistics portal (dataset selection pending)",
+      "dataset_code": "BI_TBD",
+      "access_method": "to_be_verified",
+      "source_url": "https://www.bi.go.id/en/statistik/",
+      "enabled": false,
+      "status": "DISCOVERED"
+    },
+    {
+      "id": "bps_webapi",
+      "institution": "Badan Pusat Statistik",
+      "dataset_name": "BPS WebAPI (dataset selection pending)",
+      "dataset_code": "BPS_TBD",
+      "access_method": "api_key_required_to_verify",
+      "source_url": "https://webapi.bps.go.id/",
+      "enabled": false,
+      "status": "DISCOVERED"
+    }
+  ]
+}
