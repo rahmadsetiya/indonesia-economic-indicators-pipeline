@@ -87,3 +87,22 @@ def test_metadata_contains_file_information(tmp_path):
     assert metadata["size_bytes"] == source_file.stat().st_size
     assert len(metadata["sha256"]) == 64
     assert metadata["extracted_at_utc"].endswith("Z")
+
+def test_corrupted_metadata_raises_error(tmp_path):
+    source_file = tmp_path / "source.xlsx"
+    source_file.write_bytes(b"contoh isi excel")
+
+    destination_directory = tmp_path / "raw"
+    destination_directory.mkdir()
+
+    corrupted_metadata = destination_directory / "rusak.json"
+    corrupted_metadata.write_text("{", encoding="utf-8")
+
+    with pytest.raises(
+        ValueError,
+        match="Metadata JSON rusak"
+    ):
+        extract_bi_rate(
+            source_file,
+            destination_directory,
+        )
